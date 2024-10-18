@@ -1,0 +1,71 @@
+#we need a live server for this . just a demo
+name: CI/CD for Account and customer Microservice
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build with Maven
+        run: mvn clean install
+
+      - name: Build Docker image
+        run: docker build -t samseyi672/mobilemoneytransactionms-MobileMoneyTransactionMs:0.0.1-SNAPSHOT:${{ github.sha }} .
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker image
+        run: docker push samseyi672/mobilemoneytransactionms-MobileMoneyTransactionMs:0.0.1-SNAPSHOT:${{ github.sha }}
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: SSH into the server
+        uses: sam/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: |
+            # Stop the currently running container
+            docker stop your-application || true
+            docker rm your-application || true
+            
+            # Pull the latest Docker image
+            docker pull samseyi672/mobilemoneytransactionms-MobileMoneyTransactionMs:0.0.1-SNAPSHOT:${{ github.sha }}
+            
+            # Run the Docker container
+            docker run -d --name MobileMoneyAccountMs -p 8080:8080 samseyi672/mobilemoneytransactionms-MobileMoneyTransactionMs:0.0.1-SNAPSHOT:${{ github.sha }}
