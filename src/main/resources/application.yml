@@ -1,0 +1,47 @@
+server:
+  port: 8081
+spring:
+ application:
+   name: mobilemoneyaccountms
+ profiles:
+   active: "prod"
+   datasource:
+     url: jdbc:mysql://localhost:3306/mobilemoneyaccountdb
+     username: root
+     password: root
+   jpa:
+     show-sql: true
+   sql:
+     init:
+       mode: always
+   config:
+     import: "optional:configserver:http://localhost:8071/"
+
+ management:
+   endpoints:
+     web:
+       exposure:
+         include: "*"
+   endpoint:
+     shutdown:
+       enabled: true # for graceful shutdown in eureka
+   info:
+     env:
+       enabled: true ;
+endpoints:
+  shutdown:
+    enabled: true
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetchRegistry: true
+    registerWithEureka: true
+    serviceurl:
+      defaultZone: http://localhost:8070/eureka/
+#for description in the eureka microservice network.
+info:
+  app:
+    name: "mobilemoneyaccountms"
+    description: "Mobile Money"
+    version: "1.0.0"
