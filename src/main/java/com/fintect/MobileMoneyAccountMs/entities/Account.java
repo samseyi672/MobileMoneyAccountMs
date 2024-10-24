@@ -21,7 +21,7 @@ import java.math.BigDecimal;
 public class Account extends  BaseEntity {
 
     @Column(name="account_number")
-    @Id
+   // @Id
     private Long accountNumber;
 
     @Column(name="account_tier")

@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
+//@AllArgsConstructor
 @NoArgsConstructor
 @Schema(
         name = "ErrorResponse",

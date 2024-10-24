@@ -64,7 +64,7 @@ public class IAccountServiceImpl implements IAccountService{
         boolean isUpdated = false;
         AccountsDto accountsDto = customerDto.getAccountsDto();
         if(accountsDto !=null ){
-            Account accounts = accountRepository.findByAccountNumber(String.valueOf(accountsDto.getAccountNumber())).orElseThrow(
+            Account accounts = accountRepository.findByAccountNumber(accountsDto.getAccountNumber()).orElseThrow(
                     () -> new ResourceNotFoundException("Account", "AccountNumber", accountsDto.getAccountNumber().toString())
             );
             AccountsMapper.mapToAccounts(accountsDto, accounts);
@@ -82,7 +82,7 @@ public class IAccountServiceImpl implements IAccountService{
 
     @Override
     public AccountsDto fetchAccountByAccountNumber(String accountNumber) {
-       Account account  = accountRepository.findByAccountNumber(accountNumber).orElseThrow(() -> new ResourceNotFoundException("accountNumber","accountNumber",accountNumber));
+       Account account  = accountRepository.findByAccountNumber(Long.valueOf(accountNumber)).orElseThrow(() -> new ResourceNotFoundException("accountNumber","accountNumber",accountNumber));
        AccountsDto accountsDto  = new AccountsDto() ;
        accountsDto.setAccountTier(account.getAccountTier());
        accountsDto.setAccountNumber(account.getAccountNumber());
@@ -99,7 +99,7 @@ public class IAccountServiceImpl implements IAccountService{
 
     @Override
     public BigDecimal getAccountBalance(String sourceAccount) {
-        Account account = accountRepository.findByAccountNumber(sourceAccount).orElseThrow(() -> new ResourceNotFoundException("AccountNumber","sourceAccount",sourceAccount));
+        Account account = accountRepository.findByAccountNumber(Long.valueOf(sourceAccount)).orElseThrow(() -> new ResourceNotFoundException("AccountNumber","sourceAccount",sourceAccount));
         return account.getBookBalance() ;
       }
 

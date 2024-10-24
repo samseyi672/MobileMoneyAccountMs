@@ -43,13 +43,13 @@ import java.util.List;
 @RestController
 @RequestMapping(path="/api/v1/accounts", produces = {MediaType.APPLICATION_JSON_VALUE})
 @Validated
-@AllArgsConstructor
+//@AllArgsConstructor
 public class AccountController {
 
    private IAccountService accountService ;
 
-    @Value("${build.version}")
-    private String buildVersion;
+   @Value("${build.version}")
+    private String buildVersion="1.0.0";
 
     @Autowired
     private Environment environment;
